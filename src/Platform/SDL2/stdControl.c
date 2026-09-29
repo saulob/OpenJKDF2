@@ -387,6 +387,15 @@ void stdControl_InitSdlJoysticks()
     SDL_free(aJoystickIds);
 }
 
+// Added: 1 if joystick slot idx is read through stdControl_ReadGamepad (SDL's
+// standardized gamepad layout) rather than as a raw SDL joystick.
+int stdControl_IsGamepad(int idx)
+{
+    if (idx < 0 || idx >= JK_NUM_JOYSTICKS)
+        return 0;
+    return pGamepads[idx] != NULL;
+}
+
 int stdControl_Startup()
 {
     //UINT v0; // ebp

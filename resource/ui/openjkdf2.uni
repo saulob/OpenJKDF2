@@ -1,4 +1,4 @@
-MSGS 102          # <--- DON'T FORGET TO UPDATE THIS COUNT
+MSGS 133          # <--- DON'T FORGET TO UPDATE THIS COUNT
 
 #  "<key>"     <unused number>   "<string>"
 
@@ -152,6 +152,32 @@ MSGS 102          # <--- DON'T FORGET TO UPDATE THIS COUNT
    "KEY_MOUSE_B6"                               0 "Mouse Button 6"
    "KEY_MOUSE_B7"                               0 "Mouse Button 7"
    "KEY_MOUSE_B8"                               0 "Mouse Button 8"
+
+   ### Joystick 1 names when it is an SDL gamepad (standardized layout, see
+   ### stdControl_ReadGamepad). Looked up as "GAMEPAD_" + the generic key.
+   "GAMEPAD_KEY_JOY1_B1"                        0 "A"
+   "GAMEPAD_KEY_JOY1_B2"                        0 "B"
+   "GAMEPAD_KEY_JOY1_B3"                        0 "X"
+   "GAMEPAD_KEY_JOY1_B4"                        0 "Y"
+   "GAMEPAD_KEY_JOY1_B5"                        0 "Back"
+   "GAMEPAD_KEY_JOY1_B6"                        0 "Guide"
+   "GAMEPAD_KEY_JOY1_B7"                        0 "Start"
+   "GAMEPAD_KEY_JOY1_B8"                        0 "Left Stick"
+   "GAMEPAD_KEY_JOY1_B9"                        0 "Right Stick"
+   "GAMEPAD_KEY_JOY1_B10"                       0 "Left Bumper"
+   "GAMEPAD_KEY_JOY1_B11"                       0 "Right Bumper"
+   "GAMEPAD_KEY_JOY1_B16"                       0 "Left Trigger"
+   "GAMEPAD_KEY_JOY1_B17"                       0 "Right Trigger"
+   "GAMEPAD_KEY_JOY1_HUP"                       0 "D-Pad Up"
+   "GAMEPAD_KEY_JOY1_HDOWN"                     0 "D-Pad Down"
+   "GAMEPAD_KEY_JOY1_HLEFT"                     0 "D-Pad Left"
+   "GAMEPAD_KEY_JOY1_HRIGHT"                    0 "D-Pad Right"
+   "GAMEPAD_AXIS_JOY1_X"                        0 "Left Stick X"
+   "GAMEPAD_AXIS_JOY1_Y"                        0 "Left Stick Y"
+   "GAMEPAD_AXIS_JOY1_Z"                        0 "Right Stick X"
+   "GAMEPAD_AXIS_JOY1_R"                        0 "Right Stick Y"
+   "GAMEPAD_AXIS_JOY1_U"                        0 "Left Trigger Axis"
+   "GAMEPAD_AXIS_JOY1_V"                        0 "Right Trigger Axis"
 
 #******************************
 #  Control Setup strings

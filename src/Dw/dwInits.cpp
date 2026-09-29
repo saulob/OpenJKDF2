@@ -26,7 +26,12 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+#ifdef _WIN32
+#include <direct.h> // MSVC has no unistd.h; _getcwd is the equivalent
+#define getcwd _getcwd
+#else
 #include <unistd.h> // Note: getcwd replaces GetCurrentDirectoryA
+#endif
 
 // ------------------------------------------------------------------
 // Unit-owned globals

@@ -30,6 +30,7 @@
 #ifdef SDL2_RENDER
 void stdControl_FreeSdlJoysticks();
 void stdControl_InitSdlJoysticks();
+int stdControl_IsGamepad(int idx); // Added: slot uses the SDL gamepad (standardized) layout
 #endif
 
 void stdControl_Reset();

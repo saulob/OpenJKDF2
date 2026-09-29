@@ -503,6 +503,75 @@ void jkGuiJoystick_BindControl(int a1, int a2)
     }
 }
 
+// Added: display name for a joystick control. When joystick 1 is an SDL gamepad
+// (standardized layout, see stdControl_ReadGamepad), prefer the localized
+// "GAMEPAD_<displayStrKey>" string (e.g. GAMEPAD_KEY_JOY1_B1 -> "A"); otherwise,
+// or when no such string exists, keep the generic "Joy 1 Button N" name.
+static char16_t* jkGuiJoystick_GetDisplayName(const jkGuiJoystickEntry* pEntry)
+{
+#if defined(SDL2_RENDER) && !defined(TARGET_RETRO_HOMEBREW)
+    if (stdControl_IsGamepad(0))
+    {
+        char key[64];
+        char16_t* pName;
+
+        stdString_snprintf(key, sizeof(key), "GAMEPAD_%s", pEntry->displayStrKey);
+        pName = jkStrings_GetUniString(key);
+        if (pName)
+            return pName;
+    }
+#endif
+    return jkStrings_GetUniStringWithFallback(pEntry->displayStrKey);
+}
+
+// Added: order in which jkGuiJoystick_sub_41B390 lists the controls, as a
+// permutation of jkGuiJoystick_aEntries indices. For an SDL gamepad the common
+// controls come first (matched by dikNum, following stdControl_ReadGamepad) and
+// every remaining entry follows in table order; otherwise table order is kept.
+// Only the row order changes: each row's Darray id is still its aEntries index.
+static void jkGuiJoystick_GetDisplayOrder(int32_t* aOrder)
+{
+    uint8_t aUsed[JKGUIJOYSTICK_NUM_ENTRIES] = {0};
+    int32_t num = 0;
+    int32_t i;
+
+#if defined(SDL2_RENDER) && !defined(TARGET_RETRO_HOMEBREW)
+    static const int32_t aGamepadOrder[] = {
+        KEY_JOY1_B1, KEY_JOY1_B2, KEY_JOY1_B3, KEY_JOY1_B4, // A, B, X, Y
+        KEY_JOY1_B16, KEY_JOY1_B17,                         // Left/Right Trigger
+        KEY_JOY1_B10, KEY_JOY1_B11,                         // Left/Right Bumper
+        KEY_JOY1_B8, KEY_JOY1_B9,                           // Left/Right Stick
+        KEY_JOY1_HUP, KEY_JOY1_HDOWN, KEY_JOY1_HLEFT, KEY_JOY1_HRIGHT,
+        AXIS_JOY1_X, AXIS_JOY1_Y, AXIS_JOY1_Z, AXIS_JOY1_R, // Left/Right Stick X/Y
+        AXIS_JOY1_U, AXIS_JOY1_V,                           // Left/Right Trigger Axis
+        KEY_JOY1_B5, KEY_JOY1_B7, KEY_JOY1_B6,              // Back, Start, Guide
+    };
+
+    if (stdControl_IsGamepad(0))
+    {
+        for (int32_t j = 0; j < (int32_t)(sizeof(aGamepadOrder) / sizeof(aGamepadOrder[0])); j++)
+        {
+            for (i = 0; i < JKGUIJOYSTICK_NUM_ENTRIES; i++)
+            {
+                if (!aUsed[i] && jkGuiJoystick_aEntries[i].displayStrKey
+                    && jkGuiJoystick_aEntries[i].dikNum == aGamepadOrder[j])
+                {
+                    aUsed[i] = 1;
+                    aOrder[num++] = i;
+                    break;
+                }
+            }
+        }
+    }
+#endif
+
+    for (i = 0; i < JKGUIJOYSTICK_NUM_ENTRIES; i++)
+    {
+        if (!aUsed[i])
+            aOrder[num++] = i;
+    }
+}
+
 void jkGuiJoystick_sub_41B390()
 {
     jkGuiJoystickEntry* v0; // eax
@@ -515,6 +584,8 @@ void jkGuiJoystick_sub_41B390()
     int32_t v7; // [esp+10h] [ebp-208h]
     int32_t v8; // [esp+14h] [ebp-204h]
     char16_t wtmp[256]; // [esp+18h] [ebp-200h] BYREF
+    int32_t aOrder[JKGUIJOYSTICK_NUM_ENTRIES]; // Added
+    int32_t k; // Added
 
     jkGuiRend_DarrayFreeEntry(&jkGuiJoystick_darray2);
     jkGuiRend_DarrayFreeEntry(&jkGuiJoystick_darray);
@@ -531,21 +602,21 @@ void jkGuiJoystick_sub_41B390()
     }
     while ( v0 < &jkGuiJoystick_aEntries[JKGUIJOYSTICK_NUM_ENTRIES]);
     sithControl_EnumBindings(jkGuiJoystick_EnumFunc, 0, 1, 0, 0);
-    v7 = 0;
-    v1 = &jkGuiJoystick_aEntries[0];
-    do
+    jkGuiJoystick_GetDisplayOrder(aOrder); // Added: row order; each row's id stays its aEntries index (v7)
+    for (k = 0; k < JKGUIJOYSTICK_NUM_ENTRIES; k++)
     {
+        v7 = aOrder[k];
+        v1 = &jkGuiJoystick_aEntries[v7];
+
         // Added: in case the compiler doesn't init some of the array
         if (!v1->displayStrKey) {
-            ++v1;
-            ++v7;
             continue;
         }
 
         v2 = v1->keybits & 0xFF; // Added: 4bit -> 8bit
         v8 = v1->keybits & 0x300; // Added: 4bit -> 8bit
         v3 = v1->keybits & 0x800; // Added: 4bit -> 8bit
-        v4 = jkStrings_GetUniStringWithFallback(v1->displayStrKey);
+        v4 = jkGuiJoystick_GetDisplayName(v1); // Added: gamepad-friendly names
         if ( v1->inputFunc == -1 )
         {
             v5 = u"--";
@@ -566,10 +637,7 @@ void jkGuiJoystick_sub_41B390()
         {
             jkGuiRend_DarrayReallocStr(&jkGuiJoystick_darray2, wtmp, v7);
         }
-        ++v1;
-        ++v7;
     }
-    while ( v1 < &jkGuiJoystick_aEntries[JKGUIJOYSTICK_NUM_ENTRIES] );
     jkGuiRend_DarrayReallocStr(&jkGuiJoystick_darray2, 0, 0);
     jkGuiRend_DarrayReallocStr(&jkGuiJoystick_darray, 0, 0);
     jkGuiRend_DarrayReallocStr(&jkGuiJoystick_darray3, 0, 0);
@@ -1043,7 +1111,7 @@ void jkGuiJoystick_MenuTick(jkGuiMenu *pMenu)
             if (idx < JOYSTICK_MAX_STRS)
             {
                 //printf("%x %x %f %s\n", v19, v9, v12, v8->displayStrKey);
-                v16 = jkStrings_GetUniStringWithFallback(v8->displayStrKey);
+                v16 = jkGuiJoystick_GetDisplayName(v8); // Added: gamepad-friendly names
                 _wcscpy(v24->aStrings[idx++], v16);
             }
         }

@@ -824,6 +824,14 @@ void Window_SdlUpdate()
             bIsGamepad = 1;
         }
 
+        // MSVC has no GCC case-range extension, so this range is checked here
+        // instead of as a `case SDL_EVENT_WINDOW_FIRST ... SDL_EVENT_WINDOW_LAST:`
+        if (event.type >= SDL_EVENT_WINDOW_FIRST && event.type <= SDL_EVENT_WINDOW_LAST)
+        {
+            Window_HandleWindowEvent(&event);
+            continue;
+        }
+
         switch (event.type)
         {
             case SDL_EVENT_JOYSTICK_ADDED: {
@@ -853,9 +861,6 @@ void Window_SdlUpdate()
                 {
                     Window_msg_main_handler(g_hWnd, WM_CHAR, event.text.text[i], 0);
                 }
-                break;
-            case SDL_EVENT_WINDOW_FIRST ... SDL_EVENT_WINDOW_LAST:
-                Window_HandleWindowEvent(&event);
                 break;
             case SDL_EVENT_KEY_DOWN:
                 //stdPlatform_Printf("scancode %d\n", event.key.scancode);
@@ -1776,6 +1781,12 @@ int Window_MessageLoop()
     jkMain_GuiAdvance();
     Window_msg_main_handler(g_hWnd, WM_PAINT, 0, 0);
     
+    // Added: a JK modal opened from a mouse/key event dispatch runs inside
+    // Window_SdlUpdate, where the reentrancy guard turns the paint path's
+    // Window_SdlUpdate into a no-op; pump input + present for the nested loop.
+    if (Window_bInSdlUpdate)
+        Window_SdlUpdateModal();
+
     //Window_SdlUpdate();
     return 0;
 }
