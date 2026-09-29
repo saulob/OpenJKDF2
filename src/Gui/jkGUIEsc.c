@@ -15,6 +15,7 @@
 #include "Gui/jkGUISaveLoad.h"
 #include "Gui/jkGUISetup.h"
 #include "Gui/jkGUIForce.h"
+#include "Gui/jkGUICheats.h"
 #include "World/jkPlayer.h"
 #include "Main/jk.h"
 #include "Main/jkStrings.h"
@@ -31,7 +32,8 @@ enum jkGuiEscButton_t
     JKGUIESC_RESTART      = 14,
     JKGUIESC_SAVE         = 15,
     JKGUIESC_SETUP        = 16,
-    JKGUIESC_ABORT        = 17
+    JKGUIESC_ABORT        = 17,
+    JKGUIESC_CHEATS       = 18, // Added
 };
 
 enum jkGuiEscElement_t
@@ -45,18 +47,26 @@ enum jkGuiEscElement_t
     JKGUIESC_ELMT_RESTART      = 6,
     JKGUIESC_ELMT_SETUP        = 7,
     JKGUIESC_ELMT_ABORT        = 8,
+    JKGUIESC_ELMT_CHEATS       = 9, // Added
 };
 
-static jkGuiElement jkGuiEsc_aElements[10] = {
+static jkGuiElement jkGuiEsc_aElements[11] = {
     { ELEMENT_TEXTBUTTON, JKGUIESC_OBJECTIVES,   5, "GUI_OBJECTIVES",     3, {  0, 50,  400, 40},  1,  0,  0,  0,  0,  0, {0}, 0},
     { ELEMENT_TEXTBUTTON, JKGUIESC_MAP,          5, "GUI_MAP",            3, {  0, 100, 400, 40},  1,  0,  0,  0,  0,  0, {0}, 0},
     { ELEMENT_TEXTBUTTON, JKGUIESC_JEDIPOWERS,   5, "GUI_JEDIPOWERS",     3, {  0, 150, 400, 40},  1,  0,  0,  0,  0,  0, {0}, 0},
+#ifdef QOL_IMPROVEMENTS
+    { ELEMENT_TEXTBUTTON, JKGUIESC_RETURNTOGAME, 5, "GUI_RETURN_TO_GAME", 3, {  0, 290, 400, 40},  1,  0,  0,  0,  0,  0, {0}, 0}, // Added: moved down to make room for Cheats
+#else
     { ELEMENT_TEXTBUTTON, JKGUIESC_RETURNTOGAME, 5, "GUI_RETURN_TO_GAME", 3, {  0, 240, 400, 40},  1,  0,  0,  0,  0,  0, {0}, 0},
+#endif
     { ELEMENT_TEXTBUTTON, JKGUIESC_LOAD,         5, "GUI_LOAD",           3, {400, 270, 240, 40},  1,  0,  0,  0,  0,  0, {0}, 0},
     { ELEMENT_TEXTBUTTON, JKGUIESC_SAVE,         5, "GUI_SAVE",           3, {400, 320, 240, 40},  1,  0,  0,  0,  0,  0, {0}, 0},
     { ELEMENT_TEXTBUTTON, JKGUIESC_RESTART,      5, "GUI_RESTART",        3, {400, 220, 240, 40},  1,  0,  0,  0,  0,  0, {0}, 0},
     { ELEMENT_TEXTBUTTON, JKGUIESC_SETUP,        5, "GUI_SETUP",          3, {400, 370, 240, 40},  1,  0,  0,  0,  0,  0, {0}, 0},
     { ELEMENT_TEXTBUTTON, JKGUIESC_ABORT,        5, "GUI_ABORT",          3, {400, 420, 240, 40},  1,  0,  0,  0,  0,  0, {0}, 0},
+#ifdef QOL_IMPROVEMENTS
+    { ELEMENT_TEXTBUTTON, JKGUIESC_CHEATS,       5, "GUIEXT_CHEATS",      3, {  0, 200, 400, 40},  1,  0,  0,  0,  0,  0, {0}, 0}, // Added
+#endif
     { ELEMENT_END,        0,                     0,  NULL,                0, {0},                  0,  0,  0,  0,  0,  0, {0}, 0}
 };
 
@@ -85,6 +95,9 @@ void jkGuiEsc_Show()
         jkGuiEsc_aElements[JKGUIESC_ELMT_SAVE].bIsVisible = 0;
         jkGuiEsc_aElements[JKGUIESC_ELMT_OBJECTIVES].bIsVisible = !!(sithMulti_multiModeFlags & MULTIMODEFLAG_COOP); // Added: co-op
         jkGuiEsc_aElements[JKGUIESC_ELMT_RESTART].bIsVisible = 0;
+#ifdef QOL_IMPROVEMENTS
+        jkGuiEsc_aElements[JKGUIESC_ELMT_CHEATS].bIsVisible = 0; // Added
+#endif
     }
     else
     {
@@ -92,6 +105,9 @@ void jkGuiEsc_Show()
         jkGuiEsc_aElements[JKGUIESC_ELMT_SAVE].bIsVisible = 1;
         jkGuiEsc_aElements[JKGUIESC_ELMT_OBJECTIVES].bIsVisible = 1;
         jkGuiEsc_aElements[JKGUIESC_ELMT_RESTART].bIsVisible = 1;
+#ifdef QOL_IMPROVEMENTS
+        jkGuiEsc_aElements[JKGUIESC_ELMT_CHEATS].bIsVisible = 1; // Added
+#endif
 
         // MOTS added
         if (Main_bMotsCompat) {
@@ -128,6 +144,12 @@ void jkGuiEsc_Show()
             case JKGUIESC_JEDIPOWERS:
                 jkGuiForce_Show(0, 0.0, 0.0, 0, 0, 0);
                 continue;
+
+#ifdef QOL_IMPROVEMENTS
+            case JKGUIESC_CHEATS: // Added
+                jkGuiCheats_Show();
+                continue;
+#endif
 
             case JKGUIESC_LOAD:
                 v3 = jkGuiSaveLoad_Show(0);

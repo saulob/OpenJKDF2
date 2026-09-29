@@ -1,4 +1,4 @@
-MSGS 102          # <--- DON'T FORGET TO UPDATE THIS COUNT
+MSGS 118          # <--- DON'T FORGET TO UPDATE THIS COUNT
 
 #  "<key>"     <unused number>   "<string>"
 
@@ -94,6 +94,26 @@ MSGS 102          # <--- DON'T FORGET TO UPDATE THIS COUNT
 
    "GUIEXT_LEDGE_SQUEEZE"                       0 "Ease climbing onto ledges"
    "GUIEXT_LEDGE_SQUEEZE_HINT"                  0 "Shrink the player collider while midair so it catches less on gap corners?"
+
+#******************************
+#  Cheats
+#******************************
+   "GUIEXT_CHEATS"                              0 "Cheats"
+   "GUIEXT_CHEATS_PLAYER"                       0 "Player"
+   "GUIEXT_CHEATS_WORLD"                        0 "World"
+   "GUIEXT_CHEATS_ACTIONS"                      0 "Actions"
+   "GUIEXT_CHEATS_GOD_MODE"                     0 "God Mode"
+   "GUIEXT_CHEATS_NOCLIP"                       0 "Noclip"
+   "GUIEXT_CHEATS_FLY"                          0 "Fly"
+   "GUIEXT_CHEATS_DISABLE_AI"                   0 "Disable AI"
+   "GUIEXT_CHEATS_SLOW_MOTION"                  0 "Slow Motion"
+   "GUIEXT_CHEATS_REVEAL_MAP"                   0 "Reveal Map"
+   "GUIEXT_CHEATS_HEAL"                         0 "Heal"
+   "GUIEXT_CHEATS_ALL_WEAPONS"                  0 "All Weapons & Ammo"
+   "GUIEXT_CHEATS_ALL_ITEMS"                    0 "All Items & Keys"
+   "GUIEXT_CHEATS_REFILL_FORCE"                 0 "Refill Force"
+   "GUIEXT_CHEATS_ALL_FORCE_POWERS"             0 "All Force Powers"
+   "GUIEXT_CHEATS_BACK"                         0 "Back"
 
 #******************************
 #  Controls
