@@ -60,6 +60,11 @@ typedef struct embeddedResource_t
 ]]]
 [[[end]]]
 
+// MSVC mangles C++ variable names (GCC/Clang don't), so C++ units need C linkage to reach these
+#if defined(__cplusplus) && defined(_MSC_VER)
+extern "C" {
+#endif
+
 #ifdef NO_JK_MMAP
 
 // Vars
@@ -155,6 +160,10 @@ extern void OpenJKDF2_Globals_Reset();
     cog.outl("extern const embeddedResource_t embeddedResource_aFiles[%d];" % (len(embed_files),))
 ]]]
 [[[end]]]
+
+#if defined(__cplusplus) && defined(_MSC_VER)
+}
+#endif
 
 #ifdef __cplusplus
 //}

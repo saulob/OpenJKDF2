@@ -26,7 +26,11 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+#ifdef _MSC_VER
+#include <direct.h> // getcwd
+#else
 #include <unistd.h> // Note: getcwd replaces GetCurrentDirectoryA
+#endif
 
 // ------------------------------------------------------------------
 // Unit-owned globals

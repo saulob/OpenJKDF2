@@ -89,6 +89,7 @@ extern "C" {
 #endif // MACOS ... else
 
 #ifdef WIN32
+#undef GL_R8 // glew defines it too
 #define GL_R8 GL_RED
 #endif // WIN32
 
